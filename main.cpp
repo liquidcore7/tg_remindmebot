@@ -28,7 +28,7 @@ int main() {
             botObj.getApi().sendMessage(msg->chat->id, "Notification set to "
                                                        + repl.second);
             run_separate(botObj, msg, str_to_dur(repl.second), repl.first);
-            ofstream wr(dumpfile, ios::app | ios::out);                     // see notificationCache.h
+            ofstream wr(dumpfile + to_string(msg->chat->id), ios::app | ios::out);                     // see notificationCache.h
             wr << msg->text << '\n';
             wr.close();
         }

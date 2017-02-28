@@ -37,7 +37,7 @@ void run_separate(const TgBot::Bot &b, const TgBot::Message::Ptr mptr,
         b.getApi().sendMessage(mptr->chat->id, reply);
     });
     local.detach();
-    std::cout << "separate.." << std::endl;
+    std::cout << "separate thread called" << std::endl;
 };
 
 #endif //TG_REMINDMEBOT_TIMEHANDLING_H
