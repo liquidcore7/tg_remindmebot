@@ -22,20 +22,19 @@ std::chrono::seconds str_to_dur(const std::string &time_str)
     usrTime.tm_hour = stoi(time_str.substr(0, 2));
     usrTime.tm_min = stoi(time_str.substr(3));
     usrTime.tm_sec = 0;
-    if (usrTime.tm_hour < now->tm_hour ||
-        (usrTime.tm_hour == now->tm_hour && usrTime.tm_min < now->tm_min))
-        ++usrTime.tm_mday;
-    auto diff =  std::chrono::seconds(static_cast<unsigned long long>(difftime(mktime(&usrTime), getcurrTime)));
+    auto diff =  std::chrono::seconds(static_cast<unsigned long>
+                                      (difftime(mktime(&usrTime), getcurrTime)));
     if (diff >= std::chrono::seconds(0))
         return diff;
     else
-        return std::chrono::seconds(60*60*24 - abs(diff.count()));
+        return std::chrono::seconds(60*60*24  + diff.count());
 }
 
-void run_separate(const TgBot::Bot &b, const TgBot::Message::Ptr mptr, std::chrono::seconds timeout) {
-    std::thread local([&b, mptr, &timeout]() {
+void run_separate(const TgBot::Bot &b, const TgBot::Message::Ptr mptr,
+                  std::chrono::seconds timeout, const std::string &reply) {
+    std::thread local([b, mptr, timeout, reply]() {
         std::this_thread::sleep_for(timeout);
-        b.getApi().sendMessage(mptr->chat->id, "im alive");
+        b.getApi().sendMessage(mptr->chat->id, reply);
     });
     local.detach();
     std::cout << "separate.." << std::endl;

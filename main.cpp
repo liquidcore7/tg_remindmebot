@@ -1,15 +1,11 @@
 #include "timeHandling.h"
+#include "notificationCache.h"
 
 using namespace std;
 using namespace TgBot;
 
 static bool BotRunning = true;
 const string helloMessage("RemindMe bot there!");
-
-string gettime_tg(const string& s)
-{
-    return s.substr(s.find_first_of("0123456789"));
-}
 
 int main() {
     //Initiate bot:
@@ -21,7 +17,11 @@ int main() {
     //settime:
     botObj.getEvents().onCommand("set", [&botObj] (Message::Ptr msg)
     {
-        run_separate(botObj, msg, str_to_dur(gettime_tg(msg->text)));
+        auto repl = parse(msg->text);
+        if (repl.first == "ERR")
+            botObj.getApi().sendMessage(msg->chat->id, repl.second);
+        else
+            run_separate(botObj, msg, str_to_dur(repl.second), repl.first);
     });
     //interrupt func:
     signal(SIGINT, [] (int s) {BotRunning = false;});
