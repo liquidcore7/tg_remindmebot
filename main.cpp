@@ -13,6 +13,9 @@ int main() {
     //say hello:
     botObj.getEvents().onCommand("start", [&botObj] (Message::Ptr mes) {
         botObj.getApi().sendMessage(mes->chat->id, helloMessage);
+        ofstream wr(dumpfile, ios::app | ios::out);
+        wr << mes->chat->id << '\n';
+        wr.close();
         thread update([botObj, mes]() {this_thread::sleep_for(chrono::hours(24));
             useCache(botObj, mes);});
         update.detach();
@@ -27,7 +30,7 @@ int main() {
         {
             botObj.getApi().sendMessage(msg->chat->id, "Notification set to "
                                                        + repl.second);
-            run_separate(botObj, msg, str_to_dur(repl.second), repl.first);
+            run_separate(botObj, msg->chat->id, str_to_dur(repl.second), repl.first);
             ofstream wr(dumpfile + to_string(msg->chat->id), ios::app | ios::out);                     // see notificationCache.h
             wr << msg->text << '\n';
             wr.close();

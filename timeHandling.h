@@ -30,11 +30,11 @@ std::chrono::seconds str_to_dur(const std::string &time_str)
         return std::chrono::seconds(60*60*24  + diff.count());
 }
 
-void run_separate(const TgBot::Bot &b, const TgBot::Message::Ptr mptr,
+void run_separate(const TgBot::Bot &b, const int64_t &chatid,
                   std::chrono::seconds timeout, const std::string &reply) {
-    std::thread local([b, mptr, timeout, reply]() {
+    std::thread local([b, chatid, timeout, reply]() {
         std::this_thread::sleep_for(timeout);
-        b.getApi().sendMessage(mptr->chat->id, reply);
+        b.getApi().sendMessage(chatid, reply);
     });
     local.detach();
     std::cout << "separate thread called" << std::endl;
