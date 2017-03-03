@@ -10,16 +10,14 @@ const string helloMessage("RemindMe bot there!");
 int main() {
     //Initiate bot:
     Bot botObj("362898856:AAHVVdCjzYTOnaxCoFGEFJ7j7t15vCzTfEk");
+    //update every 24h
     thread([botObj](){cyclic(BotRunning, botObj);}).detach();
-    //say hello:
+    //say hello, initiate cache:
     botObj.getEvents().onCommand("start", [&botObj] (Message::Ptr mes) {
         botObj.getApi().sendMessage(mes->chat->id, helloMessage);
         ofstream wr(dumpfile, ios::app | ios::out);
         wr << mes->chat->id << '\n';
         wr.close();
-        thread update([botObj, mes]() {this_thread::sleep_for(chrono::hours(24));
-            useCache(botObj);});
-        update.detach();
     });
     //settime:
     botObj.getEvents().onCommand("set", [&botObj] (Message::Ptr msg)
@@ -32,7 +30,7 @@ int main() {
             botObj.getApi().sendMessage(msg->chat->id, "Notification set to "
                                                        + repl.second);
             run_separate(botObj, msg->chat->id, str_to_dur(repl.second), repl.first);
-            ofstream wr(dumpfile + to_string(msg->chat->id), ios::app | ios::out);                     // see notificationCache.h
+            ofstream wr(dumpfile + to_string(msg->chat->id), ios::app | ios::out);    // see notificationCache.h
             wr << msg->text << '\n';
             wr.close();
         }
