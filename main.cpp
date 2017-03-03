@@ -10,6 +10,7 @@ const string helloMessage("RemindMe bot there!");
 int main() {
     //Initiate bot:
     Bot botObj("362898856:AAHVVdCjzYTOnaxCoFGEFJ7j7t15vCzTfEk");
+    thread([botObj](){cyclic(BotRunning, botObj);}).detach();
     //say hello:
     botObj.getEvents().onCommand("start", [&botObj] (Message::Ptr mes) {
         botObj.getApi().sendMessage(mes->chat->id, helloMessage);
@@ -17,7 +18,7 @@ int main() {
         wr << mes->chat->id << '\n';
         wr.close();
         thread update([botObj, mes]() {this_thread::sleep_for(chrono::hours(24));
-            useCache(botObj, mes);});
+            useCache(botObj);});
         update.detach();
     });
     //settime:
