@@ -35,6 +35,25 @@ int main() {
             wr.close();
         }
     });
+    botObj.getEvents().onCommand("list", [&botObj] (Message::Ptr mptr)
+    {
+        InlineKeyboardMarkup::Ptr gui(new InlineKeyboardMarkup);
+        ifstream readNotifications(dumpfile + to_string(mptr->chat->id));
+        string buttonTxt;
+        vector<InlineKeyboardButton::Ptr> notList;
+        while (getline(readNotifications, buttonTxt))gui->inlineKeyboard.push_back(notList); {
+            InlineKeyboardButton::Ptr note(new InlineKeyboardButton);
+            note->text = parse(buttonTxt).first;
+            note->callbackData = parse(buttonTxt).first;
+            gui->inlineKeyboard.push_back({note});
+        }
+        readNotifications.close();
+        botObj.getApi().sendMessage(mptr->chat->id, "List:\n", false, 0, gui);
+    });
+    botObj.getEvents().onCallbackQuery([&botObj] (const CallbackQuery::Ptr query)
+                                       {
+                                           botObj.getApi().sendMessage(query->message->chat->id, "Coming soon");
+                                       });
     //interrupt func:
     signal(SIGINT, [] (int s) {BotRunning = false;});
     //run:
