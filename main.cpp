@@ -35,25 +35,36 @@ int main() {
             wr.close();
         }
     });
-    botObj.getEvents().onCommand("list", [&botObj] (Message::Ptr mptr)
+    botObj.getEvents().onCommand("list", [&botObj](Message::Ptr msg)
     {
-        InlineKeyboardMarkup::Ptr gui(new InlineKeyboardMarkup);
-        ifstream readNotifications(dumpfile + to_string(mptr->chat->id));
-        string buttonTxt;
-        vector<InlineKeyboardButton::Ptr> notList;
-        while (getline(readNotifications, buttonTxt))gui->inlineKeyboard.push_back(notList); {
-            InlineKeyboardButton::Ptr note(new InlineKeyboardButton);
-            note->text = parse(buttonTxt).first;
-            note->callbackData = parse(buttonTxt).first;
-            gui->inlineKeyboard.push_back({note});
+        ifstream readR(dumpfile + to_string(msg->chat->id));
+        string line, total;
+        while (getline(readR, line)) {
+            auto pr = parse(line);
+            total += pr.first + " (" + pr.second + ")\n";
         }
-        readNotifications.close();
-        botObj.getApi().sendMessage(mptr->chat->id, "List:\n", false, 0, gui);
+        readR.close();
+        if (total.empty())
+            total = "No reminders set. Try to add one!";
+        botObj.getApi().sendMessage(msg->chat->id, total);
     });
-    botObj.getEvents().onCallbackQuery([&botObj] (const CallbackQuery::Ptr query)
-                                       {
-                                           botObj.getApi().sendMessage(query->message->chat->id, "Coming soon");
-                                       });
+    botObj.getEvents().onCommand("erase", [&botObj](Message::Ptr msg) {
+        if (count(msg->text.begin(), msg->text.end(), ' ') < 1)
+            botObj.getApi().sendMessage(msg->chat->id, "Enter the name of reminder you want to delete.");
+        else {
+            ifstream readall(dumpfile + to_string(msg->chat->id));
+            string line, total, to_erase = msg->text.substr(msg->text.find(' '));
+            while (getline(readall, line)) {
+                if (line.find(to_erase) == std::string::npos)
+                    total += line + "\n";
+            }
+            readall.close();
+            ofstream newFile(dumpfile + to_string(msg->chat->id));
+            newFile << total;
+            newFile.close();
+            botObj.getApi().sendMessage(msg->chat->id, "Reminder erased.");
+        }
+    });
     //interrupt func:
     signal(SIGINT, [] (int s) {BotRunning = false;});
     //run:
