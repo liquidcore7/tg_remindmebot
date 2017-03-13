@@ -11,11 +11,6 @@
 #include <iostream>
 #include <tgbot/tgbot.h>
 
-long timezone_diff(const TgBot::Message::Ptr msg) {
-    return
-            std::chrono::system_clock::now().time_since_epoch().count() / 1000000000 - msg->date;
-}
-
 std::chrono::seconds str_to_dur(const std::string &time_str)
 {
     struct tm * now, usrTime = {0};

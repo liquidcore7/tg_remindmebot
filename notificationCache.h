@@ -38,12 +38,10 @@ void useCache(const TgBot::Bot &bot)
     for (const auto &filename : chatIDs) {
         std::ifstream reminders_read(dumpfile + filename);
         std::string notification;
-        long tzDiff;
-        reminders_read >> tzDiff;
         while (getline(reminders_read, notification)) {
             auto sep = parse(notification);
             run_separate(bot, std::stol(filename),
-                         str_to_dur(sep.second) - std::chrono::seconds(tzDiff), sep.first);
+                         str_to_dur(sep.second), sep.first);
         }
         reminders_read.close();
     }

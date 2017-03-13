@@ -18,9 +18,6 @@ int main() {
         ofstream wr(dumpfile, ios::app | ios::out);
         wr << mes->chat->id << '\n';
         wr.close();
-        wr.open(dumpfile + to_string(mes->chat->id), ios::app | ios::out);
-        wr << timezone_diff(mes) / 3600 << '\n';
-        wr.close();
     });
     //settime:
     botObj.getEvents().onCommand("set", [&botObj] (Message::Ptr msg)
@@ -32,8 +29,7 @@ int main() {
         {
             botObj.getApi().sendMessage(msg->chat->id, "Notification set to "
                                                        + repl.second);
-            run_separate(botObj, msg->chat->id, str_to_dur(repl.second) -
-                                                std::chrono::seconds(timezone_diff(msg)), repl.first);
+            run_separate(botObj, msg->chat->id, str_to_dur(repl.second), repl.first);
             ofstream wr(dumpfile + to_string(msg->chat->id), ios::app | ios::out);    // see notificationCache.h
             wr << msg->text << '\n';
             wr.close();
@@ -44,8 +40,6 @@ int main() {
     {
         ifstream readR(dumpfile + to_string(msg->chat->id));
         string line, total;
-        readR >> line;
-        line.clear();
         while (getline(readR, line)) {
             auto pr = parse(line);
             total += pr.first + " (" + pr.second + ")\n";
@@ -72,9 +66,6 @@ int main() {
             newFile.close();
             botObj.getApi().sendMessage(msg->chat->id, "Reminder erased.");
         }
-    });
-    botObj.getEvents().onCommand("timezone", [&botObj](const Message::Ptr mp) {
-        botObj.getApi().sendMessage(mp->chat->id, to_string(timezone_diff(mp) / 3600));
     });
     //interrupt func:
     signal(SIGINT, [] (int s) {BotRunning = false;});
