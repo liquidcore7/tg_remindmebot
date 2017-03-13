@@ -39,6 +39,7 @@ int main() {
             wr.close();
         }
     });
+    //list reminders
     botObj.getEvents().onCommand("list", [&botObj](Message::Ptr msg)
     {
         ifstream readR(dumpfile + to_string(msg->chat->id));
@@ -54,6 +55,7 @@ int main() {
             total = "No reminders set. Try to add one!";
         botObj.getApi().sendMessage(msg->chat->id, total);
     });
+    //erase reminder
     botObj.getEvents().onCommand("erase", [&botObj](Message::Ptr msg) {
         if (count(msg->text.begin(), msg->text.end(), ' ') < 1)
             botObj.getApi().sendMessage(msg->chat->id, "Enter the name of reminder you want to delete.");
