@@ -9,7 +9,7 @@ const string helloMessage("RemindMe bot there!");
 
 int main() {
     //Initiate bot:
-    Bot botObj("362898856:AAHVVdCjzYTOnaxCoFGEFJ7j7t15vCzTfEk");
+    Bot botObj("TOKEN");
     //update every 24h
     thread([botObj](){cyclic(BotRunning, botObj);}).detach();
     //say hello, initiate cache:
