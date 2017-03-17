@@ -11,7 +11,7 @@ using TgBot::Message;
 
 int main() {
     //Init:
-    Bot botObj("362898856:AAHVVdCjzYTOnaxCoFGEFJ7j7t15vCzTfEk");
+    Bot botObj("TOKEN");
     Scheduler sq;
     DBase dbcache;
     startup_dblaunch(botObj, dbcache, sq);
